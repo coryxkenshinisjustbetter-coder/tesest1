@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mentor AI</title>
+    <style>
+        /* This is CSS for basic styling to make the page look clean. */
+        body { font-family: sans-serif; max-width: 800px; margin: auto; padding: 20px; }
+        textarea, button { width: 100%; box-sizing: border-box; margin-bottom: 10px; }
+        textarea { height: 150px; }
+    </style>
+</head>
+<body>
+
+    <h1>Mentor AI</h1>
+    <p>Get helpful guidance on your code.</p>
+
+    <textarea id="problem-input" placeholder="Explain your problem here..."></textarea>
+    <textarea id="code-input" placeholder="Paste your code here..."></textarea>
+
+    <button onclick="sendMessage()">Get Feedback</button>
+
+    <div id="ai-response">
+        <p>Your AI mentor's response will appear here.</p>
+    </div>
+
+    <script>
+        // This function runs when the "Get Feedback" button is clicked.
+        async function sendMessage() {
+            // Get the text from the input boxes.
+            const problemInput = document.getElementById("problem-input").value;
+            const codeInput = document.getElementById("code-input").value;
+
+            // Simple check to make sure the user entered something.
+            if (!problemInput || !codeInput) {
+                alert("Please enter both your problem and your code.");
+                return;
+            }
+
+            // Put the user's data into a JSON object to send to the API.
+            const data = {
+                user_problem: problemInput,
+                user_code: codeInput
+            };
+
+            try {
+                // The 'fetch' command sends a request to your Python API.
+                const response = await fetch("http://127.0.0.1:8000/mentor", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(data),
+                });
+
+                // Get the response from your Python API.
+                const result = await response.json();
+                
+                // Put the AI's response into the 'ai-response' section of your page.
+                document.getElementById("ai-response").innerText = result.response;
+
+            } catch (error) {
+                // If there's an error (e.g., the API isn't running), this message appears.
+                console.error("Error connecting to API:", error);
+                document.getElementById("ai-response").innerText = "Sorry, something went wrong. Make sure your Python API is running.";
+            }
+        }
+    </script>
+
+</body>
+</html>
